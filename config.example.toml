@@ -1,0 +1,111 @@
+# Copy to config.toml and fill in. config.toml is gitignored.
+
+[whatnot]
+client_version = "20260916-0147"      # from x-whatnot-app-version header; only cosmetic
+feeds = ["pokemon_cards", "riftbound_category", "cyberpunk", "tcg_other"]
+followed_sellers = []   # usernames; the bot appends when it auto-follows
+discovery_interval_s = 60
+watch_slots = 40
+feed_page_size = 50                  # per request; more than 50 returns nothing
+feed_max_pages = 12                  # 12 x 50 = up to 600 streams per category
+
+[scoring]
+min_score = 40
+min_score_confirm = 60
+min_viewers_to_camp = 40
+value_w = 1.0
+odds_w = 1.0
+seller_bonus = 30
+favorite_bonus = 60                  # streamers you starred in the window
+listed_bonus = 50                    # the seller has giveaways listed that you can enter
+none_listed_penalty = 60             # the seller lists none
+quiet_penalty = 100                  # a stream just left because nothing happened
+default_prize_value = 15
+late_penalty_after_s = 45
+late_penalty_per_min = 60
+unwitnessed_start_age_s = 100
+
+[scoring.game_w]
+riftbound = 100
+pokemon = 80
+cyberpunk = 60
+other = 10
+
+[scoring.prize_keywords]
+"case" = 200
+"booster box" = 120
+"collection box" = 60
+"elite trainer" = 50
+"etb" = 50
+"psa" = 60
+"cgc" = 60
+"slab" = 60
+"single" = 20
+"pack" = 10
+
+[pacing]
+max_entries_per_hour = 12
+min_idle_between_shows_s = 20
+tap_delay_min_s = 0.8
+tap_delay_max_s = 2.0
+enter_tap_delay_min_s = 0.15
+enter_tap_delay_max_s = 0.4
+open_settle_min_s = 2.0
+open_settle_max_s = 20.0
+enter_timeout_s = 60
+hold_timeout_s = 420
+switch_after_quiet_s = 240
+switch_if_never_active_s = 90
+switch_margin = 25
+poll_interval_s = 1.5
+idle_poll_interval_s = 3.0
+idle_after_s = 120
+expand_settle_s = 0.7
+verify_settle_s = 1.0
+
+[device]
+phone_serial = ""                     # `adb devices` serial of a docked phone; blank = emulator only
+avd_name = "givvy"
+android_sdk = "C:/Android/sdk"
+emulator_boot_after_phone_missing_s = 120
+emulator_stop_after_phone_back_s = 120
+whatnot_package = "com.whatnot_mobile"
+
+[discord]
+bot_token = ""
+channel_id = ""
+mention = ""                          # e.g. "<@your-discord-user-id>"
+command_poll_s = 10
+
+[paths]
+db = "state.db"
+screens_dir = "screens"
+screens_keep_days = 7     # the bot's screenshots are deleted after this many days (0 = keep them)
+screens_max_mb = 300      # and the oldest go first when the folder is bigger than this (0 = no limit)
+log = "givvy.log"
+
+# ---- accounts (optional) -------------------------------------------------
+# Without this section the bot uses [device]: the phone when docked, else the
+# emulator, as one account called "main". Devices sharing an `account` are
+# alternatives; different accounts run at once, each in its own stream.
+# `python -m givvy.main add-emulator emu2` writes these blocks for you.
+#
+# [[accounts]]
+# name = "phone"
+# kind = "phone"
+# account = "main"
+# serial = "YOUR_ADB_SERIAL"
+#
+# [[accounts]]
+# name = "emulator"
+# kind = "emulator"
+# account = "main"
+# avd = "givvy"
+# port = 5554
+#
+# [[accounts]]
+# name = "emu2"
+# kind = "emulator"
+# account = "emu2"
+# avd = "givvy-emu2"
+# port = 5556
