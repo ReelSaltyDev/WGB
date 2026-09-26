@@ -1,0 +1,158 @@
+# Copy to config.toml and fill in. config.toml is gitignored.
+
+[whatnot]
+client_version = "20260916-0147"      # from x-whatnot-app-version header; only cosmetic
+feeds = ["pokemon_cards", "riftbound_category", "cyberpunk", "tcg_other"]
+followed_sellers = []   # usernames; the bot appends when it auto-follows
+discovery_interval_s = 60
+feeds_first = true                   # on a start, use the category feeds before the ~250 followed-seller lookups (false = 1.1.x)
+watch_slots = 40
+feed_page_size = 50                  # per request; more than 50 returns nothing
+feed_max_pages = 12                  # 12 x 50 = up to 600 streams per category
+
+[scoring]
+min_score = 40
+min_score_confirm = 60
+min_viewers_to_camp = 40
+value_w = 1.0
+odds_w = 1.0
+seller_bonus = 30
+favorite_bonus = 60                  # streamers you starred in the window
+listed_bonus = 50                    # the seller has giveaways listed that you can enter
+none_listed_penalty = 60             # the seller lists none
+quiet_penalty = 100                  # a stream just left because nothing happened
+default_prize_value = 15
+late_penalty_after_s = 45
+late_penalty_per_min = 60
+unwitnessed_start_age_s = 100
+quiet_max_per_h = 0.5                # a stream listened to for 10+ silent minutes scores at most this (3 = 1.1.x)
+quiet_memory_s = 2700                # that quiet is kept this long after it leaves the listener slots (0 = 1.1.x)
+crowd_from_seen = true               # counts read on cards refine the expected crowd (false = viewers only)
+
+[scoring.game_w]
+riftbound = 100
+pokemon = 80
+cyberpunk = 60
+other = 10
+
+[scoring.prize_keywords]
+"case" = 200
+"booster box" = 120
+"collection box" = 60
+"elite trainer" = 50
+"etb" = 50
+"psa" = 60
+"cgc" = 60
+"slab" = 60
+"single" = 20
+"pack" = 10
+
+[pacing]
+max_entries_per_hour = 12
+min_idle_between_shows_s = 20
+tap_delay_min_s = 0.8
+tap_delay_max_s = 2.0
+enter_tap_delay_min_s = 0.15
+enter_tap_delay_max_s = 0.4
+open_settle_min_s = 2.0
+open_settle_max_s = 20.0
+enter_timeout_s = 60
+hold_timeout_s = 420
+one_row_per_giveaway = true          # a card back after the badge flickered is read before any tap: one row per giveaway (false = 1.1.x)
+same_giveaway_s = 600                # ...when our last row in that stream is this recent (keep it above hold_timeout_s)
+skip_buyers_without_button = true    # an open buyers card with no Enter button is 'skipped' once, not retried and 'missed' (false = 1.1.x)
+switch_after_quiet_s = 240
+switch_if_never_active_s = 90
+switch_margin = 25
+pack_upgrade_ratio = 1.5             # leave a mixed stream only for a pack-only one promising 1.5x the pack wins/h (0 = 1.1.x)
+upgrade_after_draw = true            # ...and never while our entry there may be open: only after its draw (false = 1.1.x)
+resume_after_restart = true          # after an app restart, go straight back to the stream each account was in (false = 1.1.x)
+resume_within_s = 900                # ...if it was there this recently (after an emulator restart too)
+check_live_before_leaving = true     # a stream missing from one stream list is left only when Whatnot says it is not live (false = 1.1.x)
+poll_interval_s = 1.5
+idle_poll_interval_s = 3.0
+idle_after_s = 120
+expand_settle_s = 0.7
+verify_settle_s = 1.0
+
+[hop]
+mode = "live"                        # live | log | off: leave a crowded stream right after its draw when a clearly less crowded one is free
+margin = 1.5                         # ...when that stream promises this many times the pack wins/h, same crowd model both sides
+min_crowd = 30.0                     # never out of a stream expecting fewer than this many entrants at the draw
+linger_s = 25                        # stay this long after the draw before leaving, entering nothing
+fresh_s = 120                        # the stream moved to must have a giveaway that started at most this long ago
+max_per_hour = 3                     # voluntary moves (crowd hops and pack-only upgrades) per account per hour; 0 = never hop. Live: an upgrade waits at the cap too
+
+[device]
+phone_serial = ""                     # `adb devices` serial of a docked phone; blank = emulator only
+avd_name = "givvy"
+android_sdk = "C:/Android/sdk"
+emulator_boot_after_phone_missing_s = 120
+emulator_stop_after_phone_back_s = 120
+whatnot_package = "com.whatnot_mobile"
+emulator_retry_s = 60                 # wait after a failed boot, counted from when it failed; doubles with each failure in a row
+emulator_retry_max_s = 1800           # the longest wait between tries (it never gives up)
+emulator_alert_after = 3              # failed boots in a row before one alert; the next good boot resolves it
+emulator_kill_leftover = true         # 'already running' and adb does not list it (or Power off / Restart): end the leftover for that AVD and cold-boot
+
+[discord]
+bot_token = ""
+channel_id = ""
+mention = ""                          # e.g. "<@your-discord-user-id>"
+command_poll_s = 10
+alerts_channel_id = ""                # a channel for alerts only, with the mention (blank = channel_id; no Discord when both are blank)
+
+[paths]
+db = "state.db"
+screens_dir = "screens"
+screens_keep_days = 7     # the bot's screenshots are deleted after this many days (0 = keep them)
+screens_max_mb = 300      # and the oldest go first when the folder is bigger than this (0 = no limit)
+log = "givvy.log"
+alerts_log = "alerts.log" # one ALERT or RESOLVED line per event, whether or not Discord is set up
+
+[alerts]
+windows_notify = true     # a Windows notification from a red tray icon for each alert and resolution
+out_of_stream_min = 15    # alert when an enabled account you did not pause has been out of a stream (or stuck) this long (0 = off)
+
+[safety]
+breaker = true            # pause an account whose stream links keep failing on several sellers, and alert (never switches account)
+breaker_failures = 5      # this many failed stream opens...
+breaker_sellers = 4       # ...on at least this many sellers...
+breaker_window_s = 600    # ...within this many seconds
+breaker_recheck_s = 1200  # after a trip, one stream is tried after this long; each failed try doubles the wait
+breaker_recheck_max_s = 7200   # up to this
+check_sign_in_on_open = true   # a stream link that lands on Whatnot's sign-in screen pauses the account until you sign in (it resumes by itself), instead of trying stream after stream
+
+# [trial]
+# record_visits = true    # one visits row per stay and per failed stream open, for the trial report (false = those numbers stay blank)
+# auto_mark = true        # the first Start on this version, with no trial start stored, stores one (with the version and the settings)
+# start = ""              # trial start, local "YYYY-MM-DD HH:MM" or "YYYY-MM-DD": overrides the stored one (e.g. skip a warm-up hour)
+# end = ""                # end of the trial window, e.g. the moment you reverted (blank = now)
+# baseline_start = ""     # start of the baseline window (blank = automatic)
+# baseline_days = 7.0     # the automatic baseline: this many days before this version first started, never before 2026-09-20 00:00
+
+# ---- accounts (optional) -------------------------------------------------
+# Without this section the bot uses [device]: the phone when docked, else the
+# emulator, as one account called "main". Devices sharing an `account` are
+# alternatives; different accounts run at once, each in its own stream.
+# `python -m givvy.main add-emulator emu2` writes these blocks for you.
+#
+# [[accounts]]
+# name = "phone"
+# kind = "phone"
+# account = "main"
+# serial = "YOUR_ADB_SERIAL"
+#
+# [[accounts]]
+# name = "emulator"
+# kind = "emulator"
+# account = "main"
+# avd = "givvy"
+# port = 5554
+#
+# [[accounts]]
+# name = "emu2"
+# kind = "emulator"
+# account = "emu2"
+# avd = "givvy-emu2"
+# port = 5556
